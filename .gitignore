@@ -1,0 +1,34 @@
+# Dependencies
+**/node_modules/
+
+# Framework and build outputs
+**/.next/
+**/out/
+**/dist/
+**/coverage/
+
+# Test artifacts
+**/playwright-report/
+**/test-results/
+
+# Logs and caches
+**/logs/
+*.log
+npm-debug.log*
+**/.eslintcache
+*.tsbuildinfo
+
+# Local environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# Generated Prisma client (regenerated from server/prisma/schema.prisma)
+server/src/generated/prisma/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
