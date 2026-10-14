@@ -6,6 +6,16 @@ Antes de realizar cambios, inspeccioná la implementación existente y respetá 
 
 No introduzcas una arquitectura alternativa si el requerimiento puede resolverse correctamente dentro de la actual.
 
+## Reglas prioritarias
+
+Estas decisiones guían todos los features, especialmente al crecer:
+
+1. **Organizá componentes por bloques funcionales y relación padre-hijo.** La estructura debe permitir reconocer rápidamente qué compone cada parte de la pantalla.
+2. **Separá composición, comportamiento React y lógica pura.** Cada archivo debe tener una responsabilidad concreta; evitá tanto componentes gigantescos como fragmentación sin propósito.
+3. **Separá contratos de datos y presentación.** Los datos canónicos no deben depender de cómo se muestran; modelá variantes explícitamente.
+4. **Mantené estado local y límites de dominio.** Compartir código no implica llevarlo a `shared` ni introducir Context.
+5. **Implementá estilos con Tailwind CSS 4 y flujos accesibles.** No agregues CSS Modules ni estilos inline a componentes o features.
+
 ---
 
 # 1. Architecture boundaries
@@ -150,6 +160,15 @@ ProfileHeader
 
 No extraigas lógica a un hook únicamente para reducir líneas del componente.
 
+### Organización por bloques funcionales y relación padre-hijo
+
+- Las pantallas de `components/pages/`, cuando exista esa organización, componen bloques; no concentran filtrado, HTTP ni toda la interacción del feature.
+- Agrupá una tabla con sus filas, un formulario con sus campos y un detalle con sus secciones dentro de su bloque funcional.
+- Un hijo exclusivo vive con el bloque que lo utiliza. Los componentes usados por varios bloques del mismo feature pueden quedar en el nivel común de `components/`.
+- Evitá carpetas genéricas como `modals/` cuando separen un diálogo de la funcionalidad a la que pertenece.
+- Creá subcarpetas cuando hagan explícita una relación o responsabilidad. No crees una carpeta por archivo ni jerarquías profundas sin necesidad.
+- Extraé secciones con responsabilidad propia; no cada fragmento de JSX. No uses un límite arbitrario de líneas como criterio de separación.
+
 ---
 
 ## `hooks/`
@@ -171,6 +190,8 @@ useProducts(filters);
 
 No pongas funciones puras en `hooks`.
 
+Un hook debe expresar una responsabilidad concreta, por ejemplo coordinar filtros y paginación o gestionar el ciclo de vida de un diálogo. No extraigas un hook por cada `useState`: selección, apertura o etapa de un formulario pueden permanecer locales si su comportamiento es pequeño.
+
 ---
 
 ## `lib/`
@@ -191,6 +212,8 @@ buildProductQuery(filters);
 ```
 
 Una función en `lib` debería poder ejecutarse fuera de React.
+
+Ubicá aquí las transformaciones de contratos a valores visibles y el formato de importes y fechas. Íconos, clases Tailwind y decisiones visuales permanecen en componentes. Las reglas de negocio autoritativas pertenecen al backend; el frontend puede preparar una previsualización que el backend valide.
 
 ---
 
@@ -230,6 +253,22 @@ Usar para tipos relevantes al dominio o contratos compartidos dentro de la featu
 No dupliques un tipo si ya existe una fuente canónica apropiada.
 
 No uses `any` para evitar modelar correctamente los datos.
+
+- Dividí los contratos por responsabilidad cuando crezcan: listado, detalle, filtros y formulario. Evitá un archivo que mezcle todos los contratos y props del feature.
+- Las props exclusivas de un componente viven junto a él. Los contratos y tipos compartidos dentro del dominio viven en `types/`.
+- Modelá variantes de entidades mediante uniones discriminadas, por ejemplo `kind: 'product' | 'service'`. Evitá un tipo con numerosos campos opcionales que permita combinaciones inválidas.
+- Si IDs de entidades diferentes pueden coincidir, usá la identidad completa (`kind + id`) para selección, resolución del detalle y claves de React.
+
+### Contratos y presentación
+
+- Respetá los formatos canónicos del contrato: fechas ISO para eventos y strings decimales para importes y cotizaciones cuando el contrato requiera precisión decimal, por ejemplo `"140000.00"`. No uses importes localizados como `"140.000,00"` ni etiquetas de fecha como datos fuente.
+- Generá etiquetas y valores visibles en la capa de presentación. Los borradores de inputs pueden conservar texto transitorio; validalo y normalizalo antes de construir el contrato.
+- Separá resumen de listado y detalle cuando tengan necesidades diferentes. Una fila no debe cargar todos los datos y acciones del detalle.
+- Al definir listados paginados por página, explicitá `items`, `total`, `page` y `pageSize`, junto con filtros y orden. Respetá otro esquema si el contrato existente lo requiere; no impongas consultas separadas si la pantalla no las necesita.
+
+### Mocks compatibles con el contrato
+
+Los mocks deben respetar los tipos y formatos previstos para la API y mantenerse fuera de los componentes. Separá resúmenes y detalles cuando corresponda y resolvelos por su identidad. Usar mocks no justifica crear `api/` vacío ni afirmar que una acción persiste cuando solo es una previsualización.
 
 ---
 
@@ -378,6 +417,8 @@ No introduzcas Redux, Zustand u otra librería de estado sin un requerimiento co
 
 No conviertas información derivable en nuevo estado.
 
+Mantené local la selección de un registro, el booleano de apertura y la etapa formulario/revisión cuando solo los utiliza su bloque. Elevá únicamente el estado que de verdad deban compartir sus componentes.
+
 ---
 
 # 10. TypeScript
@@ -444,11 +485,15 @@ Considerá:
 - estados disabled;
 - feedback de errores.
 
+### Diálogos
+
+El ciclo de vida del diálogo debe tener un responsable claro: apertura/cierre, Escape, foco inicial y restauración al disparador, navegación por teclado y bloqueo/restauración del scroll. Usá controles nativos y un hook cuando coordinar ese comportamiento lo justifique. Al cambiar etapas internas, evitá que sus efectos de foco compitan con la apertura del diálogo. Los nombres accesibles y el HTML permanecen en el componente.
+
 ---
 
 # 12. Styling
 
-Usá Tailwind CSS 4 como sistema principal de styling.
+Implementá los estilos de componentes y features con Tailwind CSS 4. No agregues CSS Modules, hojas de estilos por feature, `scopeClasses` ni estilos inline. El CSS global se reserva para configuración de Tailwind, tokens y reglas realmente globales.
 
 No introduzcas:
 
@@ -462,6 +507,17 @@ sin un requerimiento concreto.
 No conviertas estilos globales en solución para estilos específicos de una feature.
 
 Mantené los estilos cerca de la responsabilidad que representan.
+
+## Iconografía
+
+Usá `lucide-react` como estándar para los iconos de la interfaz en todos los desarrollos y modificaciones futuros.
+
+- Importá individualmente los iconos utilizados desde `lucide-react`.
+- Usá sus componentes en lugar de escribir iconos mediante SVG manuales.
+- Ajustá tamaño, color y grosor con props y clases Tailwind, respetando la identidad visual.
+- Mantené los nombres accesibles de los controles y marcá como decorativos los iconos que acompañan texto.
+- Los logos y las ilustraciones de marca son recursos gráficos propios; esta regla no exige reemplazarlos por iconos.
+- Si la dependencia no está instalada, incorporala al paquete `client/` cuando una tarea necesite iconos. Esta regla no implica que ya esté instalada ni autoriza una migración global fuera del alcance de la tarea.
 
 ---
 
@@ -683,6 +739,8 @@ npm run test:e2e
 Antes de considerar una tarea terminada verificá:
 
 - el código pertenece a la capa correcta;
+- los componentes reflejan bloques funcionales y relaciones padre-hijo;
+- contratos y presentación están separados cuando corresponde;
 - no se rompieron boundaries;
 - no hay imports internos entre features;
 - no existe lógica de negocio en `app`;
@@ -691,6 +749,7 @@ Antes de considerar una tarea terminada verificá:
 - no se introdujo `any` innecesario;
 - existen loading/error/empty states cuando corresponden;
 - accessibility relevante está cubierta;
+- se revisó manualmente el comportamiento afectado cuando corresponde;
 - los tests apropiados existen y pasan;
 - lint pasa;
 - typecheck pasa;

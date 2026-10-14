@@ -285,6 +285,17 @@ Los DTOs representan entrada/salida HTTP.
 
 Agregar decorators Swagger cuando sean necesarios para mantener contratos correctamente documentados.
 
+## Documentación del contrato HTTP
+
+Todo módulo que exponga endpoints debe mantener un `API.md` dentro de `src/modules/<domain>/`, enlazado desde el README del módulo. El README explica arquitectura y decisiones internas; API.md debe ser una referencia de integración autosuficiente para consumidores y agentes frontend.
+
+- Documentá autenticación/transporte y permisos, método/ruta, params/query/body, defaults, límites, nullabilidad y reglas observables.
+- Incluí tipos TypeScript del JSON enviado/recibido, fechas como strings ISO, respuestas completas de éxito y errores comunes/específicos por endpoint con su formato global.
+- Los ejemplos usan datos ficticios y válidos. No uses placeholders como snapshots vacíos si la respuesta real incluye objetos completos; describí sus tipos y campos.
+- Distinguí lo implementado de integraciones o funcionalidades pendientes. No inventes endpoints, respuestas o reglas para completar la documentación.
+- Cuando cambie el contrato HTTP, actualizá implementación, DTOs/Swagger y API.md en el mismo cambio. Swagger se conserva como contrato estructurado; API.md explica su uso, no lo reemplaza.
+- Evitá duplicar el contrato manualmente en documentación de frontend o en el README interno. Usá enlaces al documento del módulo.
+
 No usar Zod para DTOs.
 
 Zod está reservado para environment/config.
@@ -802,6 +813,7 @@ Antes de considerar una tarea terminada:
 - DTOs están actualizados;
 - validation funciona;
 - Swagger refleja el contrato;
+- API.md del módulo y su enlace desde README están actualizados cuando cambia el contrato HTTP;
 - errors utilizan el formato común.
 
 ### Security
