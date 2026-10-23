@@ -156,7 +156,7 @@ Read [server/README.md](server/README.md) for modules, Prisma, HTTP contracts, h
 
 ### Requirements
 
-- Node.js 22.12 or newer
+- Node.js 22.23.4+ (22.x) or 24.22.1+ (24.x)
 - npm
 - PostgreSQL for migrations and persistent backend operations
 
@@ -166,7 +166,6 @@ Read [server/README.md](server/README.md) for modules, Prisma, HTTP contracts, h
 git clone https://github.com/martinpanasci/modular-fullstack-starter.git
 cd modular-fullstack-starter
 ```
-
 
 ### 2. Install the frontend
 
@@ -325,3 +324,7 @@ MIT. See [LICENSE](LICENSE).
 ## Status
 
 This repository is a reusable foundation, not a complete product application.
+
+## Git hooks
+
+`npm ci` in either `client/` or `server/` configures the same root `.husky/pre-commit` hook. The hook runs each installed project's local lint-staged on its own staged files. Install both projects to validate changes in both. Prisma schemas use `prisma format` in the server.

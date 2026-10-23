@@ -16,19 +16,19 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "analyze": "cross-env ANALYZE=true next build",
-    "prepare": "cd .. && husky client/.husky"
+    "prepare": "cd .. && husky .husky"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.23.4 || ^24.22.1"
   },
   "dependencies": {
-    "next": "16.3.5",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "16.3.5",
-    "@playwright/test": "1.63.0",
+    "@next/bundle-analyzer": "16.4.3",
+    "@playwright/test": "1.64.1",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/dom": "10.4.2",
     "@testing-library/jest-dom": "7.0.1",
@@ -37,20 +37,20 @@
     "@types/node": "22.20.4",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "6.1.1",
+    "@vitejs/plugin-react": "6.1.2",
     "cross-env": "10.1.0",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.3.5",
+    "eslint-config-next": "16.4.3",
     "eslint-config-prettier": "10.1.8",
     "husky": "9.1.7",
     "jsdom": "28.1.0",
     "lint-staged": "16.4.0",
-    "prettier": "3.9.8",
+    "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "0.8.1",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
-    "vite": "8.3.0",
-    "vitest": "5.0.1"
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
@@ -58,5 +58,6 @@
       "prettier --write"
     ],
     "*.{css,json,md,mdx,yml,yaml}": "prettier --write"
-  }
+  },
+  "packageManager": "npm@10.9.9"
 }

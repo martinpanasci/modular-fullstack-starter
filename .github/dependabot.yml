@@ -38,6 +38,11 @@ updates:
     labels:
       - dependencies
       - backend
+    groups:
+      nestjs:
+        patterns: ["@nestjs/*"]
+      prisma:
+        patterns: ["prisma", "@prisma/*"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

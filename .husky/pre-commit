@@ -1,0 +1,8 @@
+for project in client server; do
+  if [ -d "$project/node_modules" ]; then
+    (cd "$project" && npx --no-install lint-staged --cwd .) || exit 1
+  elif git diff --cached --name-only -- "$project/" | grep -q .; then
+    echo "Install dependencies in $project before committing changes there." >&2
+    exit 1
+  fi
+done
